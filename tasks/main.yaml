@@ -34,6 +34,12 @@
     - b4syk
     - b4syk_tmux
 
+- name: Configure the most beautiful banner in the world
+  ansible.builtin.import_tasks: banner.yaml
+  tags:
+    - b4syk
+    - b4syk_banner
+
 - name: Ensure Timezone set
   ansible.builtin.import_tasks: timezone.yaml
   tags:
