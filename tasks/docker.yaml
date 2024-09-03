@@ -1,0 +1,94 @@
+# Determine the list of packages to install based on the OS
+- name: Docker | Set package list fact for Debian (including RaspberryPI)
+  ansible.builtin.set_fact:
+    fact_docker_package_list:
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - python3-pip
+  when: ansible_os_family | lower == 'debian'
+
+- name: Docker | Set package list fact for RedHat
+  ansible.builtin.set_fact:
+    fact_docker_package_list:
+      - ca-certificates
+      - curl
+      - device-mapper-persistent-data
+      - lvm2
+      - python3-pip
+      - yum-utils
+  when: ansible_os_family | lower == 'redhat'
+
+- name: Docker | Ensure docker dependencies
+  ansible.builtin.package:
+    name: "{{ fact_docker_package_list }}"
+    state: present
+    update_cache: true
+  when: fact_docker_package_list
+
+- name: Docker | Ensure docker official gpg repo key installed in Debian (including RaspberryPI)
+  ansible.builtin.apt_key:
+    url: "{{ b4syk_docker_debian_gpg_key }}"
+    state: present
+  when: ansible_os_family | lower == 'debian'
+
+- name: Docker | Ensure docker repository installed in Debian
+  ansible.builtin.apt_repository:
+    repo: "{{ b4syk_docker_debian_repo }}"
+    state: present
+  when:
+    - ansible_os_family | lower == 'debian'
+    - not ansible_facts['machine'] == 'aarch64'
+
+- name: Docker | Ensure docker repository installed for ARM (just RaspberryPI)
+  ansible.builtin.apt_repository:
+    repo: "{{ b4syk_docker_raspberrypi_repo }}"
+    state: present
+  when: ansible_facts['machine'] == 'aarch64'
+
+- name: Ensure docker repository installed in RedHat
+  ansible.builtin.command: "yum-config-manager --add-repo {{ b4syk_docker_redhat_repo }}"
+  when: ansible_os_family | lower == 'redhat'
+
+- name: Docker | Update cache
+  ansible.builtin.package:
+    update_cache: true
+
+- name: Docker | Ensure docker installed
+  ansible.builtin.package:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    state: present
+  when: not ansible_check_mode
+
+- name: Docker | Add the ansible_user to docker group
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: true
+
+- name: Docker | Verify docker package installation
+  ansible.builtin.command: docker --version
+  register: b4syk_docker_version
+
+- name: Docker | Display docker version
+  ansible.builtin.debug:
+    msg: "Docker version installed: {{ b4syk_docker_version.stdout }}"
+  when: not ansible_check_mode
+
+# - name: Docker | Ensure configuration for docker daemon
+#   template:
+#     src: daemon.json.j2
+#     dest: /etc/docker/daemon.json
+#   notify: restart docker
+
+- name: Docker | Enable and start Docker service
+  ansible.builtin.systemd:
+    name: docker
+    enabled: true
+    state: started
+
+# WARNING: You need to close your current terminal and start another one in order your user
+# have access to docker group

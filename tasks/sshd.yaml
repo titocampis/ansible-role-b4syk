@@ -1,0 +1,26 @@
+- name: SSHD | Configure sshd listening port in sshd_config.d/custom.conf
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config.d/custom.conf
+    regexp: '^#?Port\s+'
+    line: "Port {{ ansible_port }}"
+    state: present
+  notify: Restart sshd
+  when: b4syk_sshd_pubkey_authentication
+
+- name: SSHD | Enable PubkeyAuthentication setting in sshd_config.d/custom.conf
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config.d/custom.conf
+    regexp: '^#?PubkeyAuthentication\s+'
+    line: 'PubkeyAuthentication yes'
+    state: present
+  notify: Restart sshd
+  when: b4syk_sshd_pubkey_authentication
+
+- name: SSHD | Disable PasswordAuthentication setting in sshd_config.d/custom.conf
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config.d/custom.conf
+    regexp: '^#?PasswordAuthentication\s+'
+    line: 'PasswordAuthentication no'
+    state: present
+  notify: Restart sshd
+  when: not b4syk_sshd_password_authentication

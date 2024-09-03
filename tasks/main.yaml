@@ -1,0 +1,48 @@
+- name: Ensure b4syk packages installed
+  ansible.builtin.import_tasks: packages.yaml
+  tags:
+    - b4syk
+    - b4syk_packages
+
+- name: Shell useful configuration
+  ansible.builtin.import_tasks: shell.yaml
+  tags:
+    - b4syk
+    - b4syk_shell
+
+- name: Ensure vim configuration
+  ansible.builtin.import_tasks: vim.yaml
+  tags:
+    - b4syk
+    - b4syk_vim
+
+- name: Ensure sshd configuration
+  ansible.builtin.import_tasks: sshd.yaml
+  tags:
+    - b4syk
+    - b4syk_sshd
+
+- name: Ensure pubkeys to access via ssh
+  ansible.builtin.import_tasks: ssh_pubkeys.yaml
+  tags:
+    - b4syk
+    - b4syk_ssh_pubkeys
+
+- name: Ensure tmux installed and configured
+  ansible.builtin.import_tasks: tmux.yaml
+  tags:
+    - b4syk
+    - b4syk_tmux
+
+- name: Ensure Timezone set
+  ansible.builtin.import_tasks: timezone.yaml
+  tags:
+    - b4syk
+    - b4syk_timezone
+
+- name: Ensure docker installed and running
+  ansible.builtin.import_tasks: docker.yaml
+  tags:
+    - b4syk
+    - b4syk_docker
+  when: b4syk_docker_enabled

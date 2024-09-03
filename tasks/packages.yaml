@@ -1,0 +1,23 @@
+# Determine the list of packages to install based on the OS
+- name: Packages | Set package list for Debian
+  ansible.builtin.set_fact:
+    fact_package_list: "{{ b4syk_packages + b4syk_debian_packages + b4syk_extra_packages }}"
+  when: ansible_os_family | lower == 'debian'
+
+- name: Packages | Set package list for RedHat
+  ansible.builtin.set_fact:
+    fact_package_list: "{{ b4syk_packages + b4syk_redhat_packages + b4syk_extra_packages }}"
+  when: ansible_os_family | lower == 'redhat'
+
+- name: Packages | Set package list for RaspberryPi # Overrides debian packages
+  ansible.builtin.set_fact:
+    fact_package_list: "{{ b4syk_packages + b4syk_raspberry_packages + b4syk_extra_packages }}"
+  when: ansible_facts['machine'] == 'aarch64'
+
+# Ensure base packages installed
+- name: Packages | Ensure base packages installed
+  ansible.builtin.package:
+    name: "{{ fact_package_list }}"
+    state: present
+    update_cache: true
+  when: fact_package_list
