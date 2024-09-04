@@ -1,3 +1,11 @@
+- name: SSHD | Ensure file sshd_config.d/custom.conf
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config.d/custom.conf
+    state: touch
+    owner: root
+    group: root
+    mode: "0644"
+
 - name: SSHD | Configure sshd listening port in sshd_config.d/custom.conf
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config.d/custom.conf
