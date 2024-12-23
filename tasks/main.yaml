@@ -52,3 +52,9 @@
     - b4syk
     - b4syk_docker
   when: b4syk_docker_enabled
+
+- name: Ensure Fuzzy Finder installed and configured for history
+  ansible.builtin.import_tasks: fzf.yaml
+  tags:
+    - b4syk
+    - b4syk_fzf

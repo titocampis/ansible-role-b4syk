@@ -1,0 +1,25 @@
+# Following the documentation from https://github.com/junegunn/fzf README
+- name: Fuzzy Finder (.fzf) | Ensure fzf not present by package manager
+  ansible.builtin.package:
+    name: fzf
+    state: absent
+
+- name: Fuzzy Finder (.fzf) | Clone fzf repository in {{ ansible_user }} home
+  become_user: "{{ ansible_user }}"
+  ansible.builtin.git:
+    repo: "https://github.com/junegunn/fzf"
+    dest: "/home/{{ ansible_user }}/.fzf"
+
+- name: Fuzzy Finder (.fzf) | Clone fzf repository in root home
+  ansible.builtin.git:
+    repo: "https://github.com/junegunn/fzf"
+    dest: "/root/.fzf"
+
+- name: Fuzzy Finder (.fzf) | Install and configure fzf for {{ ansible_user }}
+  become_user: "{{ ansible_user }}"
+  ansible.builtin.command:
+    cmd: /home/{{ ansible_user }}/.fzf/install --all
+
+- name: Fuzzy Finder (.fzf) | Install and configure fzf for root
+  ansible.builtin.command:
+    cmd: /root/.fzf/install --all

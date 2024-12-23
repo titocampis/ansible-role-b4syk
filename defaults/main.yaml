@@ -12,6 +12,7 @@ b4syk_packages:
   - ca-certificates
   - curl
   - dnsutils
+  - git
   - htop
   - iotop
   - mtr
