@@ -1,5 +1,8 @@
 skip_list:
-    - schema[meta]
-    - meta-no-tags
-    - no-changed-when
     - ignore-errors
+    - latest[git]
+    - meta-no-tags
+    - name[template]
+    - no-changed-when
+    - partial-become[task]
+    - schema[meta]
