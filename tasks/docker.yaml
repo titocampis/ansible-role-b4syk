@@ -63,9 +63,9 @@
     state: present
   when: not ansible_check_mode
 
-- name: Docker | Add the ansible_user to docker group
+- name: Docker | Add the b4syk_main_user to docker group
   ansible.builtin.user:
-    name: "{{ ansible_user }}"
+    name: "{{ b4syk_main_user }}"
     groups: docker
     append: true
 

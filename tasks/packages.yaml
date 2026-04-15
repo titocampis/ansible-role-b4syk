@@ -14,6 +14,14 @@
     fact_package_list: "{{ b4syk_packages + b4syk_raspberry_packages + b4syk_extra_packages }}"
   when: ansible_facts['machine'] == 'aarch64'
 
+# When its rhel, install first epel-release
+- name: Packages | Pre-install epel relese for RedHat
+  ansible.builtin.package:
+    name: epel-release
+    state: present
+    update_cache: true
+  when: ansible_os_family | lower == 'redhat'
+
 # Ensure base packages installed
 - name: Packages | Ensure base packages installed
   ansible.builtin.package:

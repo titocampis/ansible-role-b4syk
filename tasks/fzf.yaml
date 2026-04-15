@@ -4,21 +4,21 @@
     name: fzf
     state: absent
 
-- name: Fuzzy Finder (.fzf) | Clone fzf repository in {{ ansible_user }} home
-  become_user: "{{ ansible_user }}"
+- name: Fuzzy Finder (.fzf) | Clone fzf repository in {{ b4syk_main_user }} home
+  become_user: "{{ b4syk_main_user }}"
   ansible.builtin.git:
     repo: "https://github.com/junegunn/fzf"
-    dest: "/home/{{ ansible_user }}/.fzf"
+    dest: "/home/{{ b4syk_main_user }}/.fzf"
 
 - name: Fuzzy Finder (.fzf) | Clone fzf repository in root home
   ansible.builtin.git:
     repo: "https://github.com/junegunn/fzf"
     dest: "/root/.fzf"
 
-- name: Fuzzy Finder (.fzf) | Install and configure fzf for {{ ansible_user }}
-  become_user: "{{ ansible_user }}"
+- name: Fuzzy Finder (.fzf) | Install and configure fzf for {{ b4syk_main_user }}
+  become_user: "{{ b4syk_main_user }}"
   ansible.builtin.command:
-    cmd: /home/{{ ansible_user }}/.fzf/install --all
+    cmd: /home/{{ b4syk_main_user }}/.fzf/install --all
 
 - name: Fuzzy Finder (.fzf) | Install and configure fzf for root
   ansible.builtin.command:
