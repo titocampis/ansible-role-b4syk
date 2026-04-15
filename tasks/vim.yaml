@@ -1,4 +1,4 @@
-- name: Vim | Configure vimrc on root and {{ ansible_user }}
+- name: Vim | Configure vimrc on root and {{ b4syk_main_user }}
   ansible.builtin.template:
     src: vimrc.j2
     dest: "{{ item.path }}"
@@ -8,5 +8,5 @@
   with_items:
     - path: "/root/.vimrc"
       owner: "root"
-    - path: "/home/{{ ansible_user }}/.vimrc"
-      owner: "{{ ansible_user }}"
+    - path: "/home/{{ b4syk_main_user }}/.vimrc"
+      owner: "{{ b4syk_main_user }}"

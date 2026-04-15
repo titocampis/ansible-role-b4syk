@@ -1,10 +1,14 @@
+# Main user
+b4syk_main_user: ""
+b4syk_main_user_authkey: ""
+
 # Ensure Packages Installed
 b4syk_extra_packages: []
 b4syk_debian_packages:
   - apt-transport-https
   - netcat # Not sure if necessary, maybe included with nmap
 b4syk_redhat_packages:
-  - epel-release
+  - acl
   - wget
 b4syk_raspberry_packages: []
 b4syk_packages:
@@ -35,14 +39,30 @@ b4syk_shell_block: |
     alias docker-rm-all='docker rm -f $(docker ps -aq)'
     alias docker-prune-all='docker container prune -f && docker image prune -f'
 
-# SSHD Config
-b4syk_sshd_pubkey_authentication: true
-b4syk_sshd_password_authentication: true
+# # SSHD Config
+# b4syk_sshd_pubkey_authentication: true
+# b4syk_sshd_password_authentication: true
 
-# Authorized Keys Management
-b4syk_ssh_pubkeys: []
-# - user: pepito
-#   pubkey: ....
+# Users Management
+b4syk_users_rm: []
+  # - jiminy.cricket
+
+b4syk_users: []
+  # - username: "jiminy.cricket"
+  #   createhome: true # Optional - default(true)
+  #   groups: ["sudo", "docker"] # Optional - default(omit)
+  #   shell: "/bin/bash" # Optional - default(/bin/bash)   
+  #   authkey: "rsaAjdlkjff.." # Optional - default(omit)
+  #   realname: "" # Optional - default(omit)
+  #   uid: "" # Optional - default(omit)
+  #   gid: "" # Optional - default(omit)
+  #   non_unique: true/false # Optional - default(omit)=false
+
+b4syk_sudoers_rm: []
+  # - jiminy.cricket
+
+b4syk_sudoers: []
+  # - jiminy.cricket
 
 # Tmux
 b4syk_tmux_key: "a"

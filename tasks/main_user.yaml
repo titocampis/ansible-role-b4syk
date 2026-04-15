@@ -1,0 +1,38 @@
+- name: Users | Set admin group for Debian
+  ansible.builtin.set_fact:
+    admin_group: "sudo"
+  when: ansible_os_family | lower == 'debian'
+
+- name: Users | Set admin group for RedHat
+  ansible.builtin.set_fact:
+    admin_group: "wheel"
+  when: ansible_os_family | lower == 'redhat'
+
+- name: Users | Ensure User Group
+  ansible.builtin.group:
+    name: "{{ b4syk_main_user }}"
+    state: present
+
+- name: Users | Ensure User
+  ansible.builtin.user:
+    name: "{{ b4syk_main_user }}"
+
+- name: Users | Ensure authorized key
+  ansible.posix.authorized_key:
+    user: "{{ b4syk_main_user }}"
+    key: "{{ b4syk_main_user_authkey }}"
+    state: present
+  when: b4syk_main_user_authkey is defined and b4syk_main_user_authkey != ""
+
+- name: Users | Ensure sudo permissions
+  ansible.builtin.user:
+    name: "{{ b4syk_main_user }}"
+    groups: "{{ admin_group }}"
+    append: true
+
+- name: Users | Configure sudoers file
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    state: present
+    line: "{{ b4syk_main_user }}     ALL=(ALL:ALL) NOPASSWD: ALL"
+

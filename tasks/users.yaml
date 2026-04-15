@@ -1,0 +1,84 @@
+- name: Users | Set admin group for Debian
+  ansible.builtin.set_fact:
+    admin_group: "sudo"
+  when: ansible_os_family | lower == 'debian'
+
+- name: Users | Set admin group for RedHat
+  ansible.builtin.set_fact:
+    admin_group: "wheel"
+  when: ansible_os_family | lower == 'redhat'
+
+- name: Users | Ensure Users Group
+  ansible.builtin.group:
+    name: "{{ item.username }}"
+    state: present
+    gid: "{{ item.gid | default(omit) }}"
+    non_unique: "{{ item.non_unique | default(omit) }}"
+  with_items: "{{ b4syk_users }}"
+
+- name: Users | Ensure Users
+  ansible.builtin.user:
+    name: "{{ item.username }}"
+    shell: "{{ item.shell | default(/bin/bash) }}"
+    createhome: "{{ item.createhome | default(true) }}"
+    comment: "{{ item.realname | default(omit) }}"
+    uid: "{{ item.uid | default(omit) }}"
+    group: "{{ item.username | default(omit) }}"
+    groups: "{{ item.groups | default(omit) }}"
+    non_unique: "{{ item.non_unique | default(omit) }}"
+  with_items: "{{ b4syk_users }}"
+
+- name: Users | Ensure users authorized keys set up
+  ansible.posix.authorized_key:
+    user: "{{ item.username }}"
+    key: "{{ item.authkey }}"
+    state: present
+  when: item.authkey is defined and item.authkey != ""
+  with_items: "{{ basyk_users }}"
+
+- name: Users | Ensure sudo permissions
+  ansible.builtin.user:
+    name: "{{ item.username }}"
+    groups: "{{ admin_group }}"
+    append: true
+  with_items: "{{ b4syk_sudoers }}"
+
+- name: Users | Configure sudoers file
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    state: present
+    line: "{{ item.username }}     ALL=(ALL:ALL) NOPASSWD: ALL"
+  with_items: "{{ b4syk_sudoers }}"
+
+- name: Users | Ensure users not present into sudoers file
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    state: absent
+    line: "{{ item }}     ALL=(ALL:ALL) NOPASSWD: ALL"
+  with_items: "{{ b4syk_users_rm + b4syk_sudoers_rm }}"
+
+- name: Manage sudo permissions | Remove users from sudo group
+  ansible.builtin.command: "deluser {{ item }} sudo"
+  ignore_errors: true
+  with_items: "{{  b4syk_users_rm + b4syk_sudoers_rm }}"
+
+- name: Users | Ensure Users removed
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: "{{ item }}"
+    state: absent
+    force: true
+  with_items: "{{ b4syk_users_rm }}"
+
+- name: Users | Ensure Users Group removed
+  ansible.builtin.group:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ b4syk_users_rm }}"
+
+- name: Users | Ensure Users home directory removed
+  ansible.builtin.file:
+    path: "/home/{{ item }}"
+    state: absent
+  with_items: "{{ b4syk_users_rm }}"
+

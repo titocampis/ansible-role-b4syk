@@ -1,6 +1,0 @@
-- name: PubKeys | Ensure users authorized keys set up
-  ansible.posix.authorized_key:
-    user: "{{ item.user }}"
-    key: "{{ item.pubkey }}"
-    state: present
-  with_items: "{{ b4syk_ssh_pubkeys }}"
