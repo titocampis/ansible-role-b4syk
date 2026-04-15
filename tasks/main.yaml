@@ -52,6 +52,12 @@
     - b4syk
     - b4syk_timezone
 
+- name: Ensure Hostname set
+  ansible.builtin.import_tasks: hostname.yaml
+  tags:
+    - b4syk
+    - b4syk_hostname
+
 - name: Ensure docker installed and running
   ansible.builtin.import_tasks: docker.yaml
   tags:
